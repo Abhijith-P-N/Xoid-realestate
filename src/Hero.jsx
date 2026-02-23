@@ -99,7 +99,7 @@ const Hero = ({ activeTab, onTabChange, onSearch, onFilterUpdate }) => {
 
           {/* Advanced Filters Dropdown (Expansion) */}
           {showFilters && (
-            <div className="advanced-filters-dropdown">
+            <div className="advanced-filters-panel">
               <div className="filter-grid">
                 <div className="filter-group">
                   <label><DollarSign size={16} /> Price Range</label>
