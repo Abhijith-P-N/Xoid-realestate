@@ -853,14 +853,16 @@ nav h2.logo {
 
   .search-card {
     width: 100%;
-    padding: 15px;
-    /* Increased for better inner spacing */
+    padding: 18px 12px;
+    /* Increased horizontal padding slightly, decreased vertical */
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     background: #ffffff;
     border: none;
     margin: 0 auto;
     max-width: 100%;
+    box-sizing: border-box;
+    /* Ensure padding doesn't push width */
   }
 
   .tabs {
@@ -1008,18 +1010,19 @@ nav h2.logo {
 @media (max-width: 768px) {
   .advanced-filters-panel {
     position: relative;
-    /* Changed from absolute to flow naturally */
     top: auto;
     left: auto;
     right: auto;
-    padding: 20px 5px 0;
-    /* Added small horizontal padding to prevent edges touching */
+    padding: 20px 10px 0;
+    /* Increased horizontal padding from 5px to 10px */
     border-radius: 0;
     margin-top: 20px;
     box-shadow: none;
     border: none;
     border-top: 1px solid #eee;
     animation: none;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .filter-grid {
@@ -1039,14 +1042,20 @@ nav h2.logo {
   }
 
   .price-inputs input {
-    padding: 6px 6px;
-    /* Further reduced horizontal padding */
+    padding: 6px 4px;
+    /* Reduced internal padding to keep content centered */
     font-size: 11px;
-    /* Scale down to prevent overflow */
     height: 32px;
-    /* Even smaller */
     flex: 1;
     min-width: 0;
+    /* Allow shrinking */
+    text-align: center;
+    /* Center text to make it look balanced */
+  }
+
+  .price-inputs span {
+    padding: 0 2px;
+    color: #999;
   }
 
   .filter-group select {
