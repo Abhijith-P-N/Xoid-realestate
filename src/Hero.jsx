@@ -152,10 +152,7 @@ const Hero = ({ activeTab, onTabChange, onSearch, onFilterUpdate }) => {
 
               <div className="filter-actions">
                 <button className="reset-btn" onClick={resetFilters}>Reset All Filters</button>
-                <div className="action-buttons">
-                  <button className="cancel-btn" onClick={() => setShowFilters(false)}>Cancel</button>
-                  <button className="apply-btn" onClick={applyFilters}>Apply Filters</button>
-                </div>
+                <button className="apply-btn" onClick={applyFilters}>Apply Filters</button>
               </div>
             </div>
           )}
