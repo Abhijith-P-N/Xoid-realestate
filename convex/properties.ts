@@ -71,6 +71,13 @@ export const addProperty = mutation({
     address: v.optional(v.string()),
     parking: v.optional(v.string()),
     negotiable: v.optional(v.boolean()),
+    // Vehicle fields
+    year: v.optional(v.string()),
+    mileage: v.optional(v.string()),
+    fuelType: v.optional(v.string()),
+    transmission: v.optional(v.string()),
+    vehicleColor: v.optional(v.string()),
+    engine: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("properties", {
@@ -112,5 +119,123 @@ export const seedProperties = mutation({
         });
       }
     }
+  },
+});
+
+export const seedVehicles = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const vehicles = [
+      {
+        title: "Toyota Innova Crysta 2.4 GX",
+        location: "Kochi, Kerala",
+        price: 1850000,
+        images: [
+          "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
+          "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800",
+          "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800",
+        ],
+        description: "Well-maintained Toyota Innova Crysta with a diesel engine. Single owner, full service history. Suitable for families and long-distance travel. All documents up to date.",
+        beds: 0,
+        baths: 0,
+        area: 0,
+        type: "Buy",
+        category: "Vehicle",
+        negotiable: true,
+        year: "2021",
+        mileage: "42,000 km",
+        fuelType: "Diesel",
+        transmission: "Manual",
+        vehicleColor: "Pearl White",
+        engine: "2.4L Diesel",
+        address: "Edappally, Kochi - 682024",
+        createdAt: Date.now(),
+      },
+      {
+        title: "Honda City ZX CVT 5th Gen",
+        location: "Thrissur, Kerala",
+        price: 1250000,
+        images: [
+          "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800",
+          "https://images.unsplash.com/photo-1486496146582-9ffcd0b2b2b7?w=800",
+          "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800",
+        ],
+        description: "Honda City ZX with automatic CVT transmission. Petrol engine with excellent fuel efficiency. Sunroof, lane assist, and cruise control. Accident-free, two owners.",
+        beds: 0,
+        baths: 0,
+        area: 0,
+        type: "Buy",
+        category: "Vehicle",
+        negotiable: true,
+        year: "2022",
+        mileage: "28,500 km",
+        fuelType: "Petrol",
+        transmission: "Automatic (CVT)",
+        vehicleColor: "Obsidian Blue",
+        engine: "1.5L VTEC",
+        address: "Swaraj Round, Thrissur - 680001",
+        createdAt: Date.now(),
+      },
+      {
+        title: "Royal Enfield Meteor 350 Supernova",
+        location: "Calicut, Kerala",
+        price: 210000,
+        images: [
+          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+          "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800",
+          "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800",
+        ],
+        description: "Royal Enfield Meteor 350 in Supernova Red. Barely used, in showroom condition. Comes with windshield, saddlebag, and extended warranty. Perfect touring bike.",
+        beds: 0,
+        baths: 0,
+        area: 0,
+        type: "Buy",
+        category: "Vehicle",
+        negotiable: false,
+        year: "2023",
+        mileage: "6,200 km",
+        fuelType: "Petrol",
+        transmission: "Manual (5-speed)",
+        vehicleColor: "Supernova Red",
+        engine: "349cc Single Cylinder",
+        address: "Mavoor Road, Calicut - 673004",
+        createdAt: Date.now(),
+      },
+    ];
+
+    for (const vehicle of vehicles) {
+      await ctx.db.insert("properties", vehicle);
+    }
+  },
+});
+
+export const seedDominar = mutation({
+  args: {},
+  handler: async (ctx) => {
+    await ctx.db.insert("properties", {
+      title: "Dominar 2019 BS4 Model",
+      location: "Kerala",
+      price: 160000,
+      images: [
+        "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800",
+        "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800",
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+      ],
+      description: "Bajaj Dominar 400 2019 BS4 model in excellent condition. Well maintained, single owner. Perfect for long-distance touring and daily commute.",
+      beds: 0,
+      baths: 0,
+      area: 0,
+      type: "Buy",
+      category: "Vehicle",
+      negotiable: true,
+      year: "2019",
+      mileage: "25-30 km/l",
+      fuelType: "Petrol",
+      transmission: "Manual",
+      vehicleColor: "Green",
+      engine: "BS4 Model - 373cc",
+      address: "Kerala",
+      createdAt: Date.now(),
+    });
   },
 });
