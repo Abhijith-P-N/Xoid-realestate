@@ -9,17 +9,10 @@ const PropertyCard = ({ property }) => {
   const rawImages = property.images || [];
   const rawImage = property.image || "";
 
-  // DEBUG: log what Convex is returning
-  console.log("[PropertyCard] property.image:", rawImage);
-  console.log("[PropertyCard] property.images:", rawImages);
-  console.log("[PropertyCard] images type:", typeof rawImages, Array.isArray(rawImages));
-
   const images = Array.from(new Set([
     ...(rawImage ? [rawImage] : []),
     ...(Array.isArray(rawImages) ? rawImages : [])
   ])).filter(img => typeof img === "string" && img.trim().length > 0);
-
-  console.log("[PropertyCard] resolved finalImages:", images);
 
   const finalImages = images;
 
@@ -51,14 +44,21 @@ const PropertyCard = ({ property }) => {
       style={{ cursor: "pointer" }}
     >
       <div className="card-image-container">
+        {property.type === "Sold" && (
+          <div className="sold-overlay">
+            <span className="sold-overlay-text">SOLD</span>
+          </div>
+        )}
         <img
           src={finalImages[currentImageIndex]}
           alt={property.title}
+          loading="lazy"
           onError={(e) => {
             console.error("[PropertyCard] Image failed to load:", finalImages[currentImageIndex]);
             e.target.onerror = null;
             e.target.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80";
           }}
+          style={property.type === "Sold" ? { filter: "grayscale(45%)" } : {}}
         />
         {finalImages.length > 1 && (
           <>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import {
     ChevronLeft,
@@ -47,6 +47,25 @@ const PropertyDetailsPage = () => {
             .filter(p => p._id !== id)
             .slice(0, 4)
         : [];
+
+    // Dynamic page title for SEO
+    useEffect(() => {
+        if (property?.title) {
+            document.title = `${property.title} | XOID Real Estate`;
+            // Update canonical and OG URL dynamically
+            const canonical = document.querySelector('link[rel="canonical"]');
+            if (canonical) canonical.href = window.location.href;
+            const ogUrl = document.querySelector('meta[property="og:url"]');
+            if (ogUrl) ogUrl.setAttribute('content', window.location.href);
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle) ogTitle.setAttribute('content', `${property.title} | XOID Real Estate`);
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.setAttribute('content', property.description?.slice(0, 160) || '');
+            return () => {
+                document.title = 'XOID Real Estate | Buy, Sell & Rent Properties in Kerala';
+            };
+        }
+    }, [property]);
 
     useEffect(() => {
         if (copied) {
@@ -126,7 +145,7 @@ const PropertyDetailsPage = () => {
                         <div className="details-main">
                             <div className="main-carousel">
                                 <div className="carousel-view" style={{ cursor: 'zoom-in' }} onClick={() => { setLightboxIndex(currentImageIndex); setLightboxOpen(true); }}>
-                                    <img src={finalImages[currentImageIndex]} alt={property.title} />
+                                    <img src={finalImages[currentImageIndex]} alt={property.title} loading="eager" />
                                     <div className="lightbox-hint">Tap to view full image</div>
                                     {finalImages.length > 1 && (
                                         <>
@@ -155,14 +174,19 @@ const PropertyDetailsPage = () => {
                                             className={`thumb ${idx === currentImageIndex ? 'active' : ''}`}
                                             onClick={() => setCurrentImageIndex(idx)}
                                         >
-                                            <img src={img} alt={`Thumbnail ${idx}`} />
+                                            <img src={img} alt={`${property.title} - photo ${idx + 1}`} loading="lazy" />
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
                             <div className="details-content">
-                                <h1>{property.title}</h1>
+                                <h1>
+                                    {property.title}
+                                    {property.type === "Sold" && (
+                                        <span className="sold-title-badge">SOLD</span>
+                                    )}
+                                </h1>
                                 <div className="location-tag">
                                     <MapPin size={18} />
                                     <span>{property.location}</span>
@@ -182,20 +206,30 @@ const PropertyDetailsPage = () => {
 
                                 <div className="content-sidebar-mobile">
                                     <div className="price-card">
-                                        <span className="category-label">{property.category || "Property"} for {property.type || "Sale"}</span>
+                                        {property.type === "Sold" ? (
+                                            <span className="category-label sold-label">SOLD</span>
+                                        ) : (
+                                            <span className="category-label">{property.category || "Property"} for {property.type || "Sale"}</span>
+                                        )}
                                         <h2 className="sidebar-price">
                                             <span>₹{property.price.toLocaleString()}</span>
                                             {property.negotiable && <span className="negotiable-badge-inline">Negotiable</span>}
                                         </h2>
                                         <div className="action-row">
-                                            <button className="inquiry-btn" onClick={handleInquiry}>
-                                                <MessageSquare size={18} />
-                                                <span>Send Inquiry</span>
-                                            </button>
-                                            <button className={`share-btn ${copied ? 'copied' : ''}`} onClick={handleShare}>
-                                                {copied ? <Check size={18} /> : <Share2 size={18} />}
-                                                <span>{copied ? "Link Copied" : "Share"}</span>
-                                            </button>
+                                            {property.type === "Sold" ? (
+                                                <div className="sold-notice">🔒 This listing is no longer available</div>
+                                            ) : (
+                                                <>
+                                                    <button className="inquiry-btn" onClick={handleInquiry}>
+                                                        <MessageSquare size={18} />
+                                                        <span>Send Inquiry</span>
+                                                    </button>
+                                                    <button className={`share-btn ${copied ? 'copied' : ''}`} onClick={handleShare}>
+                                                        {copied ? <Check size={18} /> : <Share2 size={18} />}
+                                                        <span>{copied ? "Link Copied" : "Share"}</span>
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -203,95 +237,131 @@ const PropertyDetailsPage = () => {
                                 {/* Features Grid — conditional on category */}
                                 {property.category?.toLowerCase() === 'vehicle' ? (
                                     <div className="features-grid">
-                                        <div className="feature-item">
-                                            <CalendarDays size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Year</span>
-                                                <span className="value">{property.year || '—'}</span>
+                                        {property.year && (
+                                            <div className="feature-item">
+                                                <CalendarDays size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Year</span>
+                                                    <span className="value">{property.year}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Gauge size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Mileage</span>
-                                                <span className="value">{property.mileage || '—'}</span>
+                                        )}
+                                        {property.mileage && (
+                                            <div className="feature-item">
+                                                <Gauge size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Mileage</span>
+                                                    <span className="value">{property.mileage}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Fuel size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Fuel Type</span>
-                                                <span className="value">{property.fuelType || '—'}</span>
+                                        )}
+                                        {property.fuelType && (
+                                            <div className="feature-item">
+                                                <Fuel size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Fuel Type</span>
+                                                    <span className="value">{property.fuelType}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Settings2 size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Transmission</span>
-                                                <span className="value">{property.transmission || '—'}</span>
+                                        )}
+                                        {property.transmission && (
+                                            <div className="feature-item">
+                                                <Settings2 size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Transmission</span>
+                                                    <span className="value">{property.transmission}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Palette size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Color</span>
-                                                <span className="value">{property.vehicleColor || '—'}</span>
+                                        )}
+                                        {property.vehicleColor && (
+                                            <div className="feature-item">
+                                                <Palette size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Color</span>
+                                                    <span className="value">{property.vehicleColor}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Zap size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Engine</span>
-                                                <span className="value">{property.engine || '—'}</span>
+                                        )}
+                                        {property.engine && (
+                                            <div className="feature-item">
+                                                <Zap size={24} />
+                                                <div className="feature-text">
+                                                    <span className="label">Engine</span>
+                                                    <span className="value">{property.engine}</span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="features-grid">
-                                        <div className="feature-item">
-                                            <Bed size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Bedrooms</span>
-                                                <span className="value">{property.beds} Rooms</span>
-                                            </div>
+                                ) : (() => {
+                                    const cat = property.category?.toLowerCase();
+                                    const isPlot = cat === 'plot' || cat === 'land';
+                                    const isCommercial = cat === 'commercial';
+                                    const hasRooms = !isPlot && !isCommercial; // House, Apartment, Villa etc.
+                                    return (
+                                        <div className="features-grid">
+                                            {/* Beds — only for residential */}
+                                            {hasRooms && property.beds > 0 && (
+                                                <div className="feature-item">
+                                                    <Bed size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Bedrooms</span>
+                                                        <span className="value">{property.beds} Rooms</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Baths — only for residential */}
+                                            {hasRooms && property.baths > 0 && (
+                                                <div className="feature-item">
+                                                    <Bath size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Bathrooms</span>
+                                                        <span className="value">{property.baths} Baths</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Area — all categories */}
+                                            {property.area > 0 && (
+                                                <div className="feature-item">
+                                                    <Maximize size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Area</span>
+                                                        <span className="value">{property.area} sqft</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Furnished — residential only */}
+                                            {hasRooms && property.furnished && (
+                                                <div className="feature-item">
+                                                    <Home size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Furnishing</span>
+                                                        <span className="value">{property.furnished}</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Floor — residential + commercial */}
+                                            {!isPlot && property.floor && (
+                                                <div className="feature-item">
+                                                    <Layers size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Floor</span>
+                                                        <span className="value">{property.floor}</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Parking — residential + commercial */}
+                                            {!isPlot && property.parking && (
+                                                <div className="feature-item">
+                                                    <Car size={24} />
+                                                    <div className="feature-text">
+                                                        <span className="label">Parking</span>
+                                                        <span className="value">{property.parking}</span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="feature-item">
-                                            <Bath size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Bathrooms</span>
-                                                <span className="value">{property.baths} Baths</span>
-                                            </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Maximize size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Area</span>
-                                                <span className="value">{property.area} sqft</span>
-                                            </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Home size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Furnishing</span>
-                                                <span className="value">{property.furnished || 'Unfurnished'}</span>
-                                            </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Layers size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Floor</span>
-                                                <span className="value">{property.floor || 'Ground'}</span>
-                                            </div>
-                                        </div>
-                                        <div className="feature-item">
-                                            <Car size={24} />
-                                            <div className="feature-text">
-                                                <span className="label">Parking</span>
-                                                <span className="value">{property.parking || 'Open'}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                                    );
+                                })()}
 
                                 <div className="description-section">
                                     <h3>Description</h3>
@@ -303,22 +373,34 @@ const PropertyDetailsPage = () => {
                         <div className="details-sidebar">
                             <div className="sticky-sidebar">
                                 <div className="price-card">
-                                    <span className="category-label">{property.category || "Property"} for {property.type || "Sale"}</span>
+                                    {property.type === "Sold" ? (
+                                        <span className="category-label sold-label">SOLD</span>
+                                    ) : (
+                                        <span className="category-label">{property.category || "Property"} for {property.type || "Sale"}</span>
+                                    )}
                                     <h2 className="sidebar-price">
                                         <span>₹{property.price.toLocaleString()}</span>
                                         {property.negotiable && <span className="negotiable-badge-inline">Negotiable</span>}
                                     </h2>
-                                    <p className="area-price">₹ {Math.round(property.price / property.area).toLocaleString()} / sqft</p>
+                                    {property.area > 0 && (
+                                        <p className="area-price">₹ {Math.round(property.price / property.area).toLocaleString()} / sqft</p>
+                                    )}
 
                                     <div className="action-column">
-                                        <button className="inquiry-btn full-width" onClick={handleInquiry}>
-                                            <MessageSquare size={18} />
-                                            <span>Send Inquiry</span>
-                                        </button>
-                                        <button className={`share-btn full-width ${copied ? 'copied' : ''}`} onClick={handleShare}>
-                                            {copied ? <Check size={18} /> : <Share2 size={18} />}
-                                            <span>{copied ? "Share with Friends" : "Share Property"}</span>
-                                        </button>
+                                        {property.type === "Sold" ? (
+                                            <div className="sold-notice">🔒 This listing is no longer available</div>
+                                        ) : (
+                                            <>
+                                                <button className="inquiry-btn full-width" onClick={handleInquiry}>
+                                                    <MessageSquare size={18} />
+                                                    <span>Send Inquiry</span>
+                                                </button>
+                                                <button className={`share-btn full-width ${copied ? 'copied' : ''}`} onClick={handleShare}>
+                                                    {copied ? <Check size={18} /> : <Share2 size={18} />}
+                                                    <span>{copied ? "Share with Friends" : "Share Property"}</span>
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 

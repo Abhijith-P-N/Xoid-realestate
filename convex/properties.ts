@@ -209,6 +209,44 @@ export const seedVehicles = mutation({
   },
 });
 
+export const deleteProperty = mutation({
+  args: { id: v.id("properties") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const updateProperty = mutation({
+  args: {
+    id: v.id("properties"),
+    title: v.optional(v.string()),
+    location: v.optional(v.string()),
+    price: v.optional(v.number()),
+    images: v.optional(v.array(v.string())),
+    description: v.optional(v.string()),
+    beds: v.optional(v.number()),
+    baths: v.optional(v.number()),
+    area: v.optional(v.number()),
+    type: v.optional(v.string()),
+    category: v.optional(v.string()),
+    furnished: v.optional(v.string()),
+    floor: v.optional(v.string()),
+    address: v.optional(v.string()),
+    parking: v.optional(v.string()),
+    negotiable: v.optional(v.boolean()),
+    year: v.optional(v.string()),
+    mileage: v.optional(v.string()),
+    fuelType: v.optional(v.string()),
+    transmission: v.optional(v.string()),
+    vehicleColor: v.optional(v.string()),
+    engine: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    await ctx.db.patch(id, fields);
+  },
+});
+
 export const seedDominar = mutation({
   args: {},
   handler: async (ctx) => {

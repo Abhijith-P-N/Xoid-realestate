@@ -20,21 +20,21 @@ const Contact = () => {
                                 <div className="detail-icon"><Phone size={20} /></div>
                                 <div className="detail-text">
                                     <span className="label">Call us</span>
-                                    <span className="value">+91 123 456 7890</span>
+                                    <span className="value">+91 9400106048</span>
                                 </div>
                             </div>
                             <div className="details-item">
                                 <div className="detail-icon"><Mail size={20} /></div>
                                 <div className="detail-text">
                                     <span className="label">Email us</span>
-                                    <span className="value">hello@xoid.com</span>
+                                    <span className="value">xoidrealestate@gmail.com</span>
                                 </div>
                             </div>
                             <div className="details-item">
                                 <div className="detail-icon"><MapPin size={20} /></div>
                                 <div className="detail-text">
                                     <span className="label">Visit us</span>
-                                    <span className="value">123 Luxury Ave, Bangalore, KA</span>
+                                    <span className="value">Mangalore, Karnataka</span>
                                 </div>
                             </div>
                         </div>

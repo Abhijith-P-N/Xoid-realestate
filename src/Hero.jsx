@@ -50,8 +50,9 @@ const Hero = ({ activeTab, onTabChange, onSearch, onFilterUpdate }) => {
       {/* Background Image */}
       <img
         src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
-        alt=""
+        alt="Luxury real estate property exterior — XOID Real Estate"
         className="hero-image"
+        loading="eager"
       />
 
       {/* Overlay */}
